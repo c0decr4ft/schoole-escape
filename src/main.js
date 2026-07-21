@@ -78,7 +78,7 @@ scene.background = new THREE.Color(0x7a93a8);
 scene.fog = new THREE.Fog(0x9eb0c2, 72, 235);
 
 const camera = new THREE.PerspectiveCamera(68, innerWidth / innerHeight, 0.08, 260);
-const renderer = new THREE.WebGLRenderer({ antialias: true });
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
 renderer.setSize(innerWidth, innerHeight);
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.shadowMap.enabled = true;
@@ -805,7 +805,6 @@ addFloorSlab(h2 + 5.5, hallZ0, 12, hallW + 2.5, FLOOR_H, mFloorHall);
 const steps = 16;
 
 function addStairCorridorLandings(yBase, atX) {
-  const hallNorthEdge = hallZ0 + hallW * 0.5;
   const zEnd = stairStartZ + 0.42;
   const depth = zEnd - hallNorthEdge + 0.25;
   if (depth < 0.2) return;
@@ -1142,10 +1141,10 @@ function groundHeightAt(x, z, yGuess) {
   let best = castFrom(Math.max(80, yGuess + 40));
   if (best < -1e8) best = castFrom(220);
   if (best < -1e8) {
-    const cfz = classD / 2 + 0.2;
-    const hsz = classD / 2 + 0.35;
     const inStartDoorWedge =
-      Math.abs(x) < classW * 0.5 + 1.8 && z > cfz - 0.45 && z < hsz + 0.55;
+      Math.abs(x - classDoorCenterX) < doorGapHalf + 1.2 &&
+      z > classFrontZ - 0.55 &&
+      z < hallSouthEdge + 0.55;
     if (inStartDoorWedge) {
       if (yGuess < FLOOR_H * 0.42) return 0.22;
       if (yGuess > FLOOR_H * 0.58 && yGuess < FLOOR_H * 1.85) return FLOOR_H + 0.22;
@@ -1501,3 +1500,26 @@ addEventListener("resize", () => {
 });
 
 animate();
+
+/** Dev helpers for in-browser checks (teleport / look). */
+window.__escape = {
+  player,
+  teacher,
+  doors,
+  wallBoxes,
+  teleport(x, y, z, yaw) {
+    player.pos.set(x, y, z);
+    if (yaw != null) player.yaw = yaw;
+    player.vel.set(0, 0, 0);
+  },
+  lookAtDoor() {
+    player.pos.set(classDoorCenterX, 0.24, classFrontZ - 2.2);
+    player.yaw = 0;
+    player.pitch = 0;
+  },
+  lookHall() {
+    player.pos.set(0, 0.24, hallZ0);
+    player.yaw = Math.PI * 0.5;
+    player.pitch = 0;
+  },
+};
