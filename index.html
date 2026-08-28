@@ -15,7 +15,9 @@
       body > canvas {
         position: fixed;
         inset: 0;
-        z-index: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
         display: block;
       }
       #hud { position: absolute; left: 1rem; top: 1rem; font-size: 0.9rem; line-height: 1.5; max-width: 22rem; }
@@ -31,10 +33,11 @@
       }
       #clickToPlay {
         position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-        background: rgba(0,0,0,0.45); color: #fff; font-size: 1.1rem; pointer-events: none;
+        background: rgba(0,0,0,0.45); color: #fff; font-size: 1.1rem;
+        cursor: pointer; pointer-events: auto; user-select: none;
         opacity: 1; transition: opacity 0.35s;
       }
-      #clickToPlay.hidden { opacity: 0; pointer-events: none; }
+      #clickToPlay.hidden { opacity: 0; pointer-events: none; cursor: default; }
       #end {
         position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
         background: rgba(0,0,0,0.72); font-size: 1.75rem; font-weight: 600; opacity: 0; pointer-events: none;
