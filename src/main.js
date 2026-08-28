@@ -1479,11 +1479,34 @@ function animate() {
 }
 
 const canvas = renderer.domElement;
-canvas.addEventListener("click", () => {
-  if (gameState !== "win" && gameState !== "caught") canvas.requestPointerLock();
-});
+
+function startPointerLock() {
+  if (gameState === "win" || gameState === "caught") return;
+  canvas.requestPointerLock?.();
+}
+
+function bindStartClick(el) {
+  if (!el) return;
+  el.addEventListener("click", (e) => {
+    e.preventDefault();
+    startPointerLock();
+  });
+  el.addEventListener("pointerdown", (e) => {
+    if (e.pointerType === "touch") {
+      e.preventDefault();
+      startPointerLock();
+    }
+  });
+}
+
+bindStartClick(canvas);
+bindStartClick(clickToPlayEl);
+
 document.addEventListener("pointerlockchange", () => {
   if (clickToPlayEl) clickToPlayEl.classList.toggle("hidden", document.pointerLockElement === canvas);
+});
+document.addEventListener("pointerlockerror", () => {
+  if (clickToPlayEl) clickToPlayEl.classList.remove("hidden");
 });
 document.addEventListener("mousemove", (e) => {
   if (document.pointerLockElement !== canvas) return;
